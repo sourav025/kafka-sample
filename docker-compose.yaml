@@ -1,0 +1,50 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: zookeeper
+    ports:
+      - "2181:2181"
+      - "8081:8080"
+    hostname: "zookeeper"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+  kafka-1:
+    image: confluentinc/cp-kafka 
+    hostname: "kafka-1"
+    ports:
+      - "19092:19092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:19092
+    depends_on:
+      - zookeeper
+  kafka-2:
+    image: confluentinc/cp-kafka 
+    hostname: "kafka-2"
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092
+    depends_on:
+      - zookeeper
+  kafka-3:
+    image: confluentinc/cp-kafka 
+    hostname: "kafka-3"
+    ports:
+      - "39092:39092"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:39092
+    depends_on:
+      - zookeeper
+networks:
+  default:
+    external: 
+      name: "my-bridge0"
