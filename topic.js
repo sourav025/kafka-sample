@@ -30,7 +30,7 @@ async function run(){
                 { topic, numPartitions, replicationFactor }
             ]
         });
-        console.log(`Topic "${topic}" has been created successfully`);
+        console.log(`Topic "${topic}" with partitions="${numPartitions}" has been created successfully`);
     }catch(ex){
         console.log(`Error occurred ${ex}`);
     } finally {

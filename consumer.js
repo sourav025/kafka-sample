@@ -1,33 +1,36 @@
-const {Kafka} = require('kafkajs');
+const { Kafka } = require("kafkajs");
+require("dotenv").config();
 
-async function run_consumer(){
-    try{
-        const kafka = new Kafka({
-            "clientId": "srv-consumer",
-            "brokers": ["kafka-1:19092","kafka-2:29092","kafka-3:39092"]
-        });
-        const consumer = kafka.consumer({
-            "groupId": "first-test"
-        });
-        console.log('Connecting to kafka as consumer');
-        await consumer.connect();
-        console.log('app-consumer is connected');
-        
-        consumer.subscribe({
-            "topic": "users",
-            "fromBeginning": true
-        });
+async function run_consumer() {
+  try {
+    const kafka = new Kafka({
+      clientId: process.env.CLIENT_ID,
+      brokers: JSON.parse(process.env.BROKERS),
+    });
 
-        await consumer.run({
-            "eachMessage": async result => {
-                console.log(`Received message "${result.message.value}" on partition "${result.partition}"`);
-            }
-        });
+    const consumer = kafka.consumer({
+      groupId: "first-test",
+    });
 
-    }catch(ex){
-        console.log(`Error happended ${ex}`);
-    }
+    await consumer.connect();
 
+    console.log(`app-consumer ${process.env.CLIENT_ID} is connected`);
+
+    consumer.subscribe({
+      topic: process.env.TOPIC,
+      fromBeginning: false,
+    });
+
+    await consumer.run({
+      eachMessage: async (result) => {
+        console.log(
+          `Received message "${result.message.value}" on partition "${result.partition}"`
+        );
+      },
+    });
+  } catch (ex) {
+    console.log(`Error happended ${ex}`);
+  }
 }
 
 run_consumer();
